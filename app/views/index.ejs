@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route 53 Multi-Region Simulation</title>
+    <style>
+        :root {
+            --aws-orange: #FF9900;
+            --aws-dark-gray: #232F3E;
+            --aws-light-gray: #D5DBDB;
+            --aws-white: #FFFFFF;
+            --aws-blue: #0073BB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--aws-light-gray);
+            color: var(--aws-dark-gray);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--aws-dark-gray), #2A4359);
+            color: var(--aws-white);
+            padding: 1rem 2vw;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: var(--aws-white);
+            text-decoration: none;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--aws-orange);
+        }
+
+        main {
+            width: 90vw;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .status-card,
+        .comment-form-card,
+        .comments-card {
+            background: var(--aws-white);
+            border-radius: 8px;
+            padding: clamp(1rem, 3vw, 1.5rem);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .status-card p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: var(--aws-blue);
+        }
+
+        .comment-form-card h2 {
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            margin-bottom: 1rem;
+            color: var(--aws-dark-gray);
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .comment-form input[type="text"] {
+            flex: 1 1 70%;
+            padding: 0.75rem;
+            border: 1px solid var(--aws-light-gray);
+            border-radius: 4px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            transition: border-color 0.3s;
+        }
+
+        .comment-form input[type="text"]:focus {
+            border-color: var(--aws-orange);
+            outline: none;
+        }
+
+        .comment-form button {
+            flex: 0 1 auto;
+            padding: 0.75rem clamp(1rem, 3vw, 1.5rem);
+            background-color: var(--aws-orange);
+            color: var(--aws-white);
+            border: none;
+            border-radius: 4px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .comment-form button:hover {
+            background-color: #E68A00;
+            transform: translateY(-2px);
+        }
+
+        .comments-card h2 {
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            margin-bottom: 1rem;
+            color: var(--aws-dark-gray);
+        }
+
+        .comment {
+            padding: 1rem;
+            border-bottom: 1px solid var(--aws-light-gray);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment-text {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: var(--aws-dark-gray);
+        }
+
+        .comment-timestamp {
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            color: #6B7280;
+            margin-top: 0.25rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: var(--aws-dark-gray);
+            color: var(--aws-white);
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        footer p {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            nav {
+                justify-content: center;
+            }
+
+            .comment-form {
+                flex-direction: column;
+            }
+
+            .comment-form input[type="text"] {
+                flex: 1 1 100%;
+            }
+
+            .comment-form button {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                width: 95vw;
+                padding: 0 0.5rem;
+            }
+
+            .status-card,
+            .comment-form-card,
+            .comments-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Route 53 Multi-Region Recovery Simulation</h1>
+        <nav>
+            <a href="/health"> Health Check</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="status-card">
+            <p>Running in <%= region %></p>
+        </section>
+
+        <section class="comment-form-card">
+            <h2>Submit a comment</h2>
+            <form class="comment-form" method="POST" action="/comments">
+                <input type="text" name="comment" placeholder="Enter your comment" required>
+                <button type="submit">submit</button>
+            </form>
+        </section>
+
+        <section class="comments-card">
+            <h2>Comments</h2>
+            <div id="comments"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Route 53 Multi-Region Recovery Simulation. Built with AWS.</p>
+    </footer>
+
+    <script>
+        async function loadComments() {
+            try {
+                const response = await fetch('/comments');
+                const comments = await response.json();
+                const commentsDiv = document.getElementById('comments');
+                commentsDiv.innerHTML = comments.map(c => `
+                    <div class="comment">
+                        <div class="comment-text">${c.text}</div>
+                        <div class="comment-timestamp">${
+                            new Date(c.timestamp).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            })
+                        }</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+        loadComments();
+    </script>
+</body>
+</html>

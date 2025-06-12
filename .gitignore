@@ -1,0 +1,26 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log
+package-lock.json
+
+# Terraform
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+.tfplan
+.terraform.tfstate.lock.info
+
+# Backend
+backend.tfvars
+
+# General
+.DS_Store
+*.log
+
+# Others
+route-53-multi-region-simulation-app-server-key-us-east-1.pem
+route-53-multi-region-simulation-app-server-key-us-west-2.pem
+output.json
